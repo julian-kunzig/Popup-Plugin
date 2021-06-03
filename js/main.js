@@ -8,7 +8,7 @@ var options = {
   textbox: {
     width: 200,
     height: 100,
-    content: '',
+    content: 'popup popup popup popup popup',
   },
   star: { strokeStyle: '#033594', fillStyle: '#033594' },
   arrow: { width: 20, height: 20, left: 110 },
@@ -162,20 +162,48 @@ const drawStar = (cx, cy, spikes, outerRadius, innerRadius) => {
 // Update Canvas
 const updateCanvas = () => {
   const text = options.textbox.content;
+  var words = text.split(' ');
   var lines = [];
   var t = '';
-  for (var i = 0; i < text.length; i++) {
-    if (
-      i === 0 ||
-      i % Math.round((options.textbox.width / options.size) * 1.4)
-    ) {
-      t = t + text[i];
-    } else if (i !== 0) {
-      t = t + text[i];
-      lines.push(t);
-      t = '';
+  words = words.map((w) => w + ' ');
+  words.forEach((w, n) => {
+    for (var i = 0; i < w.length; i++) {
+      if (n === 0 && i === 0) {
+        t = t + w[i];
+      } else if (
+        t.length % Math.round((options.textbox.width / options.size) * 1.4)
+      ) {
+        if (
+          w.length > Math.round((options.textbox.width / options.size) * 1.4)
+        ) {
+          if (
+            t.length ===
+            Math.round((options.textbox.width / options.size) * 1.4)
+          ) {
+            lines.push(t);
+            t = w[i];
+          } else {
+            t = t + w[i];
+          }
+        } else {
+          if (
+            t.length + w.length - i >
+            Math.round((options.textbox.width / options.size) * 1.4)
+          ) {
+            lines.push(t);
+            t = w[i];
+          } else {
+            t = t + w[i];
+          }
+        }
+      } else if (
+        !(t.length % Math.round((options.textbox.width / options.size) * 1.4))
+      ) {
+        lines.push(t);
+        t = w[i];
+      }
     }
-  }
+  });
   if (t !== '') lines.push(t);
 
   let textWidth = 0;
@@ -245,14 +273,14 @@ popupBtn.addEventListener('click', (e) => {
 
   modal.style.display = 'block';
   if (pX >= wW && pY >= wH) {
-    modal.style.left = (e.x - options.modal.width - 40) + 'px';
-    modal.style.top = (e.y - options.modal.height - 56) + 'px';
+    modal.style.left = e.x - options.modal.width - 40 + 'px';
+    modal.style.top = e.y - options.modal.height - 56 + 'px';
   } else if (pX >= wW) {
-    modal.style.left = (e.x - options.modal.width - 40) + 'px';
+    modal.style.left = e.x - options.modal.width - 40 + 'px';
     modal.style.top = e.y + 'px';
   } else if (pY >= wH) {
     modal.style.left = e.x + 'px';
-    modal.style.top = (e.y - options.modal.height - 56) + 'px';
+    modal.style.top = e.y - options.modal.height - 56 + 'px';
   } else {
     modal.style.left = e.x + 'px';
     modal.style.top = e.y + 'px';
